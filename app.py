@@ -126,44 +126,37 @@ def render_data(uploaded_file, max_rooms):
         display_data['date'] = pd.to_datetime(display_data['date']).dt.strftime('%d-%m-%Y')  # Format date
         display_columns = ['date', 'expected_shows', 'is_no_show', 'additional_possible_revenue']
 
-        col1, col2, col3 = st.columns([3, 4, 1])  # Adjusted column width ratio
-        with col1:
-            # Display summary data in a table
-            st.dataframe(display_data[display_columns].rename(columns={
-                'date': 'Date', 'expected_shows': 'Predicted Shows', 'is_no_show': 'Predicted No-Shows', 'additional_possible_revenue': 'Additional Possible Revenue'
-            }))
+        st.dataframe(display_data[display_columns].rename(columns={
+            'date': 'Date', 'expected_shows': 'Predicted Shows', 'is_no_show': 'Predicted No-Shows', 'additional_possible_revenue': 'Additional Possible Revenue'
+        }))
 
-        with col2:
-            # Generate the heatmap for no-shows
-            if not summary_data.empty:
-                summary_data['date'] = pd.to_datetime(summary_data['date'], format='%d-%m-%Y')
-                start_date = summary_data['date'].min()
-                end_date = summary_data['date'].max()
+        # Generate the heatmap for no-shows
+        if not summary_data.empty:
+            summary_data['date'] = pd.to_datetime(summary_data['date'], format='%d-%m-%Y')
+            start_date = summary_data['date'].min()
+            end_date = summary_data['date'].max()
 
-                if pd.notnull(start_date) and pd.notnull(end_date):
-                    dates = pd.date_range(start=start_date, end=end_date).to_pydatetime().tolist()
+            if pd.notnull(start_date) and pd.notnull(end_date):
+                dates = pd.date_range(start=start_date, end=end_date).to_pydatetime().tolist()
 
-                    if dates:
-                        values = summary_data.set_index('date').reindex(dates, fill_value=0)['is_no_show'].tolist()
-                        fig, ax = plt.subplots(figsize=(20, 15)) 
-                        july.heatmap(
-                            dates,
-                            values,
-                            ax=ax,
-                            title="Daily Predicted No-Shows",
-                            cmap="viridis",
-                            month_grid=True,
-                            colorbar=True,
-                            dpi=100
-                        )
-                        st.pyplot(fig)
-                else:
-                    st.error("No dates available to generate heatmap.")
+                if dates:
+                    values = summary_data.set_index('date').reindex(dates, fill_value=0)['is_no_show'].tolist()
+                    fig, ax = plt.subplots(figsize=(20, 15)) 
+                    july.heatmap(
+                        dates,
+                        values,
+                        ax=ax,
+                        title="Daily Predicted No-Shows",
+                        cmap="viridis",
+                        month_grid=True,
+                        colorbar=True,
+                        dpi=100
+                    )
+                    st.pyplot(fig)
             else:
-                st.error("No data available for analysis.")
-
-        with col3:
-            st.write("")  # Placeholder to balance the layout
+                st.error("No dates available to generate heatmap.")
+        else:
+            st.error("No data available for analysis.")
 
         # Generate the bar chart for potential revenue
         st.markdown("<br>", unsafe_allow_html=True)
