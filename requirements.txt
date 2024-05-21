@@ -3,6 +3,3 @@ pandas
 matplotlib
 july
 plotly
-pickle
-base64
-datetime
