@@ -1,6 +1,6 @@
 streamlit
 pandas
-matplotlib
-july
+matplotlib==3.2.2
+july==0.1.3
 plotly
 scikit-learn==1.2.2
